@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Transmissor • Curadoria</title>
+
+<!-- Fonte e estilo do modal (baseados no seu Analisador) -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- Fonte da assinatura igual ao Workspace -->
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap" rel="stylesheet">
+<style id="brand-signature">
+  /* Assinatura “Transmissor” alinhada ao botão HDSP CORP dentro do header */
+  .cb-header::before{
+    content:"Transmissor";
+    display:inline-block;
+    margin:0 8px 0 2px;      /* encosta no canto e mantém respiro da borda */
+    font-family:'Caveat', cursive;
+    font-size:26px;          /* mesma proporção do Workspace */
+    line-height:1;           /* evita “buraco” vertical */
+    background: var(--grad);
+    -webkit-background-clip:text; background-clip:text;
+    color: transparent;
+    text-shadow: 0 2px 12px rgba(34,211,238,.18);
+    align-self:center;       /* alinha verticalmente com o botão */
+  }
+</style>
+<style>
+        :root{
+--bg:#0a0f1a; --surface:#0c1424; --surface2:#101a2b; --stroke:rgba(255,255,255,.10);
+--text:#e7eeff; --dim:#9bb0c9;
+--accent1:#60a5fa; --accent2:#a78bfa; --accent3:#22d3ee;
+--grad:linear-gradient(135deg,var(--accent1) 0%, var(--accent2) 50%, var(--accent3) 100%);
+--radius:16px;
+/* alturas e espaçamentos padronizados */
+--field-h:40px; --gap:12px;
+}
+  html,body{
+    margin:0; min-height:100vh;
+    background: radial-gradient(120% 120% at 0% 0%, #0b1220 0%, #070d17 60%);
+    color:var(--text);
+    font-family:'Montserrat','Segoe UI',Arial,sans-serif;
+    font-size:15px;
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  }
+  header{display:none}
+  .title{display:none}
+
+  /* Modal (o app já abre dentro dele) */
+  /* Deixa de ser overlay, vira container normal */
+#chatbaseModal{
+  position: static;
+  inset: auto;
+  background: transparent;
+  display: block;
+  z-index: auto;
+  backdrop-filter: none;
+}
+/* Página premium (full page) */
+/* Container de página (sem cara de modal): borda sutil e sombra leve */
+.cb-dialog{
+width: min(1920px, 92vw);
+min-height: auto;
+max-height: none;
+overflow: visible;
+margin: 24px auto;
+padding: 24px 24px 28px 96px; /* espaço p/ menu lateral */
+background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02)), var(--surface);
+border: 4px solid var(--stroke);
+border-radius: var(--radius);
+box-shadow: 0 24px 64px rgba(0,0,0,.45);
+position: relative; /* ancora o menu */
+}
+  .cb-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.06)}
+  .cb-title{margin:0;font-size:1.2rem;font-weight:700;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .cb-close{
+  all: unset;
+  display: none;         /* esconde o botão, já que não é mais modal */
+}
+
+/* Cartões com respiro consistente e acabamento premium */
+.cb-card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid var(--stroke);border-radius:18px;padding:16px;margin-bottom:16px}
+  /* Alinhamento e ritmo consistentes entre campos/botões */
+.row{display:flex;gap:var(--gap);align-items:center;flex-wrap:wrap}
+  label>span{color:var(--dim);font-size:.92rem}
+  /* Campos gerais */
+/* Campos com altura padronizada (inclui Área/Produto) */
+input[type="text"],input[type="password"],input[type="number"],input[type="file"], select{
+background:var(--surface2);
+color:var(--text);
+border:1px solid var(--stroke);
+border-radius:12px;
+padding:8px 12px;
+height:var(--field-h);
+outline:none;
+transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="file"]:focus,
+select:focus{
+  border-color: rgba(136,197,255,.5);
+  box-shadow: 0 0 0 3px rgba(34,211,238,.15);
+}
+
+/* Deixa o “Escolher arquivo” com o mesmo padrão dos botões */
+input[type="file"]{
+  cursor: pointer;
+  padding: 0 0px; /* alinhado ao padrão */
+  min-height: var(--field-h);
+}
+input[type="file"]::file-selector-button{
+border: none;
+border-radius: 12px;
+padding: 0 14px;
+min-height: var(--field-h);
+margin-right: 10px;
+font-weight: 700;
+cursor: pointer;
+background: var(--grad);
+color: #05121a;
+box-shadow: 0 10px 28px rgba(34,211,238,.25);
+}
+input[type="file"]::-webkit-file-upload-button{
+border: none;
+border-radius: 12px;
+padding: 0 14px;
+min-height: var(--field-h);
+margin-right: 10px;
+font-weight: 700;
+cursor: pointer;
+background: var(--grad);
+color: #05121a;
+box-shadow: 0 10px 28px rgba(34,211,238,.25);
+}
+  input::placeholder{color:#7f8aa0}
+/* Setinhas dos <input type="number"> no mesmo padrão visual (sutil, sem alterar o comportamento) */
+input[type="number"]{ -moz-appearance:textfield; }
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button{
+  opacity:.5; filter:saturate(.85) brightness(1.1);
+}
+input[type="number"]:hover::-webkit-outer-spin-button,
+input[type="number"]:hover::-webkit-inner-spin-button{ opacity:.85; }
+
+    /* Botões alinhados à altura dos campos + microinterações sutis */
+.cb-btn{
+all:unset;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
+padding:8px 16px; min-height:var(--field-h); border-radius:12px; font-weight:700; letter-spacing:.2px;
+transition: transform .08s ease, box-shadow .12s ease, background .12s ease, border-color .12s ease;
+}
+  .cb-btn-ghost{
+    background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+    border:1px solid var(--stroke);
+  }
+  .cb-btn-ghost:hover{ transform:translateY(-1px); border-color:rgba(156,200,255,.35); }
+  .cb-btn-ghost:active{ transform:translateY(0); }
+  .cb-btn-primary{
+    background:var(--grad); color:#05121a; border:1px solid transparent;
+    box-shadow:0 10px 28px rgba(34,211,238,.25);
+  }
+  .cb-btn-primary:hover{ transform:translateY(-1px); box-shadow:0 14px 36px rgba(34,211,238,.32); }
+  .cb-btn-primary:active{ transform:translateY(0); }
+
+  .cb-group-list{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+    gap:var(--gap);
+    max-height:420px;
+    overflow:auto;
+    padding:10px;
+    border:1px solid var(--stroke);
+    border-radius:14px;
+  }
+  .cb-group-item{display:flex;gap:10px;align-items:flex-start;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid var(--stroke);border-radius:12px;padding:10px}
+  .cb-group-item b{color:var(--text)} .cb-group-item small{color:#90a1b7}
+
+.batches{display:flex;flex-direction:column;gap:10px;margin-top:8px;width:100%}
+.batch-card{
+  background: radial-gradient(120% 120% at 0% 0%, #0d1626 0%, #0a111d 60%);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+  padding:10px 12px;
+  cursor:pointer;
+  box-shadow: 0 4px 14px rgba(0,0,0,.25);
+  transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+.batch-card:hover{ transform: translateY(-1px); border-color: rgba(156,200,255,.35); box-shadow: 0 6px 18px rgba(0,0,0,.32); }
+.batch-head{display:flex;justify-content:space-between;gap:12px;font-weight:700;align-items:center}
+.batch-body{display:none;margin-top:8px}
+.batch-body pre{
+  margin:0;
+  white-space:pre-wrap;word-break:break-word;
+  background:#0b1422;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;
+  padding:12px;
+  font-family: ui-monospace,Consolas,Menlo,monospace;
+  line-height:1.35;
+  max-height:360px; overflow:auto;
+}
+
+  .cb-progress-wrap{display:flex;align-items:center;gap:var(--gap);width:100%}
+  progress{appearance:none;width:100%;height:14px;border:none;border-radius:999px;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02))}
+  progress::-webkit-progress-value{background:var(--grad)}
+  .cb-progress-text{min-width:210px;text-align:right;color:var(--dim)}
+  .cb-results{font-family:ui-monospace,Consolas,Menlo,monospace;font-size:.92em;background:#0a111d;border:1px solid var(--stroke);border-radius:12px;padding:12px;max-height:320px;overflow:auto;color:#dce6ff}
+  .muted{color:#9fb3c8}
+  .ok{color:#9ff3c1} .err{color:#ffb3b3}
+  /* ——— App Switcher: botão + menu dropdown ——— */
+/* App Switcher agora dentro do header: posicionamento relativo ao container */
+.app-switcher {
+position: relative;
+margin-left: auto;
+z-index: 10;
+}
+/* Altura padronizada para o botão HDSP CORP */
+.app-switcher__btn {
+border: 1px solid var(--stroke);
+background: linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+color: var(--text);
+padding: 0 12px;
+min-height: var(--field-h);
+border-radius: 12px;
+font-weight: 700;
+letter-spacing: .2px;
+cursor: pointer;
+box-shadow: 0 8px 24px rgba(0,0,0,.25);
+backdrop-filter: blur(6px);
+}
+.app-switcher__btn:hover { transform: translateY(-1px); }
+.app-switcher__menu {
+  position: absolute;
+  right: 0;
+  margin-top: 8px;
+  min-width: 260px;
+  padding: 8px;
+  border-radius: 14px;
+  border: 1px solid var(--stroke);
+  background: linear-gradient(180deg, rgba(15,23,42,.98), rgba(15,23,42,.95));
+  box-shadow: 0 20px 40px rgba(0,0,0,.35);
+  display: none;
+}
+.app-switcher.open .app-switcher__menu { display: block; }
+
+.app-switcher__item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 10px; border-radius: 10px; text-decoration: none;
+  color: var(--text);
+  border: 1px solid transparent;
+}
+.app-switcher__item small { color: var(--dim); display:block; margin-top:2px }
+.app-switcher__item:hover {
+  background: rgba(255,255,255,.04);
+  border-color: rgba(255,255,255,.08);
+}
+/* === Ajuda flutuante (FAB) canto inferior direito — mesmo padrão do Conversor === */
+.help-fab{
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 30000;
+}
+.help-hint{
+  position: relative;
+  display: inline-flex; justify-content: center; align-items: center;
+  width: 36px; height: 36px; border-radius: 50%;
+  /* usa o mesmo gradiente dos botões do Transmissor */
+  background: var(--grad);
+  color: #05121a;           /* mesmo texto dos botões */
+  font-weight: 800;         /* bold só no ícone ? */
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0,0,0,.35);
+}
+.help-hint:focus{ outline: 2px solid rgba(255,255,255,.25); outline-offset: 3px; }
+
+/* Pop-up compacto, abre para cima */
+.help-bubble{
+  position: absolute;
+  bottom: calc(100% + 12px);
+  right: 0;
+
+  /* largura confortável e limites de viewport */
+  width: min(560px, 94vw);
+  min-width: 360px;
+  max-height: min(76vh, 620px);
+  overflow: auto;
+
+  background: var(--surface);
+  color: #d8dee6CC;         /* neutro chamativo com opacidade */
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 18px 40px rgba(0,0,0,.45);
+  display: none;
+  z-index: 1;
+
+  /* evita herdar o bold do .help-hint */
+  font-weight: 400;
+
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Tipografia interna (título/sub em destaque, corpo normal) */
+.help-bubble .hb-title{
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: .2px;
+  margin: 0 0 8px 0;
+  color: var(--text);
+}
+.help-bubble .hb-section{ margin: 10px 0 12px 0; }
+.help-bubble .hb-section .hb-sub{
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #d8dee6E6;
+}
+.help-bubble p{ margin: 4px 0 6px 0; }
+.help-bubble ul{ margin: 6px 0 6px 16px; padding: 0; }
+.help-bubble li{ margin-bottom: 4px; }
+.help-bubble .hb-flow{
+  margin-top: 10px;
+  font-weight: 400;
+}
+/* remove negrito de <strong>/<b> dentro do corpo */
+.help-bubble .hb-section strong,
+.help-bubble .hb-section b{ font-weight: 400 !important; }
+
+/* mostra o pop-up em hover/foco */
+.help-hint:hover .help-bubble,
+.help-hint:focus .help-bubble,
+.help-hint:focus-within .help-bubble{ display: block; }
+
+/* Mobile */
+@media (max-width: 520px){
+  .help-fab{ right: 12px; bottom: 12px; }
+  .help-bubble{ right: -6px; max-width: calc(100vw - 24px); }
+}
+</style>
+<!-- Side Nav – Estilo (padrão visual do app) -->
+<style id="side-nav-style">
+  .side-nav{
+    position:absolute; left:24px; top:24px; bottom:28px; z-index:1200; /* dentro do container */
+    width:48px; padding:6px;
+    border:1px solid var(--stroke);
+    border-radius:12px;
+    background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)), var(--surface);
+    box-shadow:0 14px 36px rgba(0,0,0,.35);
+    display:flex; flex-direction:column; justify-content:space-between; gap:8px;
+  }
+  /* linha fina ao lado do menu – não sobrepõe o conteúdo */
+  .side-nav::after{
+    content:""; position:absolute; right:-6px; top:0; bottom:0; width:1px;
+    background:var(--stroke); border-radius:1px; opacity:.9; pointer-events:none;
+  }
+  .side-nav__group{ display:grid; gap:8px; justify-items:center; }
+  .sn-btn{
+    display:grid; place-items:center; width:40px; height:40px;
+    margin:0 auto;
+    border:1px solid var(--stroke); border-radius:12px;
+    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+    color:var(--text); text-decoration:none; cursor:pointer;
+    transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+  }
+
+  .sn-btn:hover{ transform:translateY(-1px); box-shadow:0 10px 24px rgba(0,0,0,.35); border-color:rgba(255,255,255,.18); }
+  .sn-btn:focus{ outline:2px solid rgba(34,211,238,.25); outline-offset:2px; }
+  .sn-btn.active{ background:var(--grad); border-color:transparent; color:#05121a; box-shadow:0 8px 24px rgba(0,0,0,.35); }
+  .sn-btn svg{ width:20px; height:20px; display:block; }
+  .sn-sep{ height:1px; background:var(--stroke); border-radius:1px; margin:4px 0; }
+  /* retira o bubble flutuante original */
+  .help-fab{ display:none !important; }
+  @media (max-width:900px){
+    .side-nav{ display:none; }
+    .cb-dialog{ padding-left:24px !important; } /* quando não há menu, volta o padding */
+  }
+</style>
+</head>
+<body>
+
+<header><h1 class="title"></h1></header>
+<!-- App Switcher movido para dentro do container .cb-header -->
+<!-- APP roda dentro do modal -->
+<div id="chatbaseModal">
+    <div class="cb-dialog">
+    <!-- Side Nav – HTML (atalhos) -->
+    <nav class="side-nav" aria-label="Atalhos de aplicativos">
+      <div class="side-nav__group">
+        <!-- Workspace -->
+        <a class="sn-btn" data-app="workspace" title="Workspace" href="#">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="3" y="3" width="8" height="8" rx="2" stroke="currentColor"></rect>
+            <rect x="13" y="3" width="8" height="8" rx="2" stroke="currentColor"></rect>
+            <rect x="3" y="13" width="8" height="8" rx="2" stroke="currentColor"></rect>
+            <rect x="13" y="13" width="8" height="8" rx="2" stroke="currentColor"></rect>
+          </svg>
+        </a>
+        <!-- Conversor (livros) -->
+        <a class="sn-btn" data-app="conversor" title="Conversor" href="#">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 4h9a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H5V4z" stroke="currentColor"/>
+            <path d="M5 16h9" stroke="currentColor"/>
+            <path d="M19 6h-3v12h3a2 2 0 0 0 0-4h-1 1a2 2 0 1 0 0-4h-1 1a2 2 0 1 0 0-4z" stroke="currentColor"/>
+          </svg>
+        </a>
+        <!-- Transmissor (transmissão) -->
+        <a class="sn-btn" data-app="transmissor" title="Transmissor" href="#">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="2" stroke="currentColor"></circle>
+            <path d="M7 7a7 7 0 0 0 0 10" stroke="currentColor"></path>
+            <path d="M17 7a7 7 0 0 1 0 10" stroke="currentColor"></path>
+            <path d="M4.5 4.5a10 10 0 0 0 0 15" stroke="currentColor"></path>
+            <path d="M19.5 4.5a10 10 0 0 1 0 15" stroke="currentColor"></path>
+          </svg>
+        </a>
+      </div>
+
+      <div class="sn-sep" role="separator" aria-hidden="true"></div>
+
+      <div class="side-nav__group">
+        <!-- Ajuda -->
+        <a class="sn-btn" data-app="ajuda" title="Ajuda" href="#">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 17v.01M9.09 9a3 3 0 1 1 4.91 2.45c-.67.42-1 1-1 1.55V14" stroke="currentColor" stroke-linecap="round"></path>
+            <circle cx="12" cy="12" r="9" stroke="currentColor"></circle>
+          </svg>
+        </a>
+      </div>
+    </nav>
+    <div class="cb-header">
+<h2 class="cb-title"></h2>
+<button class="cb-close" id="chatbaseCloseBtn" title="Fechar">Fechar</button>
+</div>
+
+    <!-- 1) Config + Import -->
+    <div class="cb-card">
+            <div class="row">
+        <label style="display:grid;gap:6px;min-width:220px;flex:1;">
+          <span>Área/Produto</span>
+          <select id="cbChatbotPreset">
+            <option value="">— Selecione —</option>
+            <option>Fiscal</option>
+            <option>Folha</option>
+            <option>ERP</option>
+            <option>Keevo Center</option>
+            <option>Contabil</option>
+          </select>
+        </label>
+        <label style="display:grid;gap:6px;min-width:220px;flex:1;">
+          <span>Chatbot ID</span>
+          <input id="cbChatbotId" type="text" placeholder="Preenchido pelo preset ou manualmente">
+        </label>
+        <label style="display:grid;gap:6px;min-width:220px;flex:1;">
+          <span>Chave API</span>
+          <input id="cbApiKey" type="password" placeholder="API Key">
+        </label>
+          <div class="row" style="gap:var(--gap); margin-left:auto; align-self:flex-end; flex-wrap:nowrap;">
+  <button class="cb-btn cb-btn-ghost" id="cbSaveBtn">Salvar</button>
+  <button class="cb-btn cb-btn-ghost" id="cbClearBtn">Limpar</button>
+</div>
+      </div>
+
+      <div class="row" style="margin-top:10px;">
+        <label style="display:grid;gap:6px;min-width:260px;">
+          <span>Arquivo JSON</span>
+          <input id="fileInput" type="file" accept=".json">
+        </label>
+        <div style="color:#9cc8ff;align-self:center" id="fileName"></div>
+      </div>
+    </div>
+
+    <!-- 2) Grupos + Intervalo -->
+    <div class="cb-card">
+      <div class="row" style="justify-content:space-between;">
+  <h3 style="margin:0">Interações</h3>
+</div>
+
+            <div class="row" style="margin:8px 0 6px">
+        <label style="display:grid;gap:6px;">
+          <span>De</span>
+<input id="cbRangeStart" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="1" style="width:120px;" autocomplete="off">
+        </label>
+        <label style="display:grid;gap:6px;">
+          <span>Até</span>
+<input id="cbRangeEnd" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="(todas)" style="width:140px;" autocomplete="off">
+        </label>
+        <div style="align-self:center;color:var(--dim)"></div>
+        <div class="row" style="align-self:center;margin-left:auto;">
+          <button class="cb-btn cb-btn-ghost" id="cbMarkAllGroupsBtn">Marcar todos</button>
+          <button class="cb-btn cb-btn-ghost" id="cbUnmarkAllGroupsBtn">Desmarcar todos</button>
+        </div>
+      </div>
+
+<div id="cbGroupList" class="cb-group-list"></div>
+</div>
+
+<!-- 3) Envio + Progresso (fora do card, como era antes) -->
+<div class="row">
+  <button class="cb-btn cb-btn-primary" id="cbSendSelectedGroupsBtn">Enviar Grupos Selecionados</button>
+  <button class="cb-btn cb-btn-ghost" id="cbCancelBtn" disabled>Cancelar envio</button>
+  <div class="cb-progress-wrap">
+    <progress id="cbProgress" max="100" value="0"></progress>
+    <span id="cbProgressText" class="cb-progress-text">Aguardando…</span>
+  </div>
+</div>
+
+    <!-- 4) Resultados -->
+    <div class="cb-card" style="margin-top:12px">
+      <h3 style="margin:0 0 8px 0">Resultados</h3>
+      <div id="cbResults" class="cb-results"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =================== Configurações / Estado =================== */
+let cbAbortCtrl = null;
+let cbCancel = false;
+const BATCH_LIMIT = 7800; // limite alvo; em 504 dividimos o lote em 2 sublotes
+const $CB = id => document.getElementById(id);
+// Pequeno atraso entre envios e entre tentativas
+const INTER_SEND_DELAY_MS = 1500;            // intervalo curto entre lotes
+const RETRY_DELAYS_MS     = [1200, 2400];    // backoff simples p/ tentativas 2 e 3
+const cbSleep = (ms) => new Promise(res => setTimeout(res, ms));
+
+let agrupamentos = []; // [{ grupo, group_id, interacoes: [{codigo,pergunta,resposta}, ...] }, ...]
+const plansCache = new Map(); // grupo -> { convId, batches: [obj], sizes: [int] }
+
+/* ===== Storage (mesma ideia do Analisador) ===== */
+const CHATBASE_DEFAULTS = { API_KEY:"", CHATBOT_ID:"", PROXY_URL:"" };
+const CB_STORAGE_KEYS   = { API_KEY:'chatbase_api_key', CHATBOT_ID:'chatbase_chatbot_id', PROXY_URL:'chatbase_proxy_url' };
+const CB_CONV_MAP_KEY   = 'chatbase_conv_map_v1';
+const CB_TRANSCRIPTS_KEY= 'chatbase_transcripts_v1';
+
+/* Presets de Área/Produto → { id, key }
+   OBS: Preencha as chaves API abaixo. Como o app não é publicado, não há risco de exposição pública. */
+const CHATBOT_PRESETS = {
+  "": { id:"", key:"" },
+  "Fiscal": { id:"v8AWTBTbs72IV0hMn5eJb",      key:"38e02d95-436a-4d90-b197-54725d933988" },
+  "Folha":  { id:"-cNttpdaD-zclYYqIhrC6",       key:"38e02d95-436a-4d90-b197-54725d933988" },
+  "ERP":    { id:"vkc18Svzyw4OyZiCOI5QV",         key:"38e02d95-436a-4d90-b197-54725d933988" },
+  "Keevo Center": { id:"1U5A2-KLHHA9VPOdFOsSc", key:"38e02d95-436a-4d90-b197-54725d933988" },
+  "Contabil": { id:"tUW6X5IaMunyomO1rwPjk",  key:"38e02d95-436a-4d90-b197-54725d933988" }
+};
+
+function cbGetSetting(key){
+  try{ const v = localStorage.getItem(key); if(v && v!=='null' && v!=='undefined') return v; }catch{}
+  if(key===CB_STORAGE_KEYS.API_KEY) return CHATBASE_DEFAULTS.API_KEY;
+  if(key===CB_STORAGE_KEYS.CHATBOT_ID) return CHATBASE_DEFAULTS.CHATBOT_ID;
+  if(key===CB_STORAGE_KEYS.PROXY_URL) return CHATBASE_DEFAULTS.PROXY_URL;
+  return "";
+}
+function cbSetSetting(key,value){try{localStorage.setItem(key,value||"")}catch{}}
+function cbClearSettings(){try{Object.values(CB_STORAGE_KEYS).forEach(k=>localStorage.removeItem(k))}catch{}}
+
+function loadConvMap(){try{return JSON.parse(localStorage.getItem(CB_CONV_MAP_KEY)||"{}")}catch{return {}}}
+function saveConvMap(map){try{localStorage.setItem(CB_CONV_MAP_KEY, JSON.stringify(map))}catch{}}
+function loadTranscripts(){try{return JSON.parse(localStorage.getItem(CB_TRANSCRIPTS_KEY)||"{}")}catch{return {}}}
+function saveTranscripts(o){try{localStorage.setItem(CB_TRANSCRIPTS_KEY, JSON.stringify(o))}catch{}}
+function genUUID(){return (crypto?.randomUUID?.() || ('cb-'+Math.random().toString(36).slice(2)+Date.now().toString(36)))}
+
+/* ===== conversationId próprio por grupo (mantém ID fixo) ===== */
+function getOrCreateConvIdForGroup(g){
+  const map = loadConvMap();
+  const key = String(g.group_id || g.grupo || 'sem-id');
+  if(!map[key]){ map[key] = genUUID(); saveConvMap(map); }
+  return map[key];
+}
+
+/* ===== Transcript helpers ===== */
+function getTranscript(convId){const all = loadTranscripts(); return Array.isArray(all[convId])?all[convId]:[]}
+function setTranscript(convId, messages){const all = loadTranscripts(); all[convId]=messages; saveTranscripts(all)}
+
+/* =================== Import (igual ao Analisador) =================== */
+$CB('fileInput').addEventListener('change', async function(){
+  const f = this.files?.[0]; if(!f) return;
+  $CB('fileName').textContent = f.name;
+  let raw; try{ raw = await f.text(); } catch{ alert('Falha ao ler arquivo.'); return; }
+  let data; try{ data = JSON.parse(raw); } catch{ alert('Arquivo inválido.'); return; }
+
+  agrupamentos = []; plansCache.clear();
+
+  // Compatível com os mesmos formatos do ANÁLISADOR
+  let rawArr = Array.isArray(data) ? data : (data.grupos || data.conversations || data.items || data.interacoes || []);
+  if(!Array.isArray(rawArr)) rawArr = Object.values(rawArr);
+
+  const hasScore = (x) => !!(x && (typeof x.score === 'number' || typeof x.nota === 'number' || x.score !== undefined));
+
+  for(let i=0;i<rawArr.length;i++){
+    const g = rawArr[i] || {};
+    const group_id = String(g.group_id || g.id || g.account_id || i+1);
+    const grupoOrig = g.grupo || g.codigo_agrupamento || g.codigo || g.group_code || `GR${String(i+1).padStart(2,'0')}`;
+
+    let inters = [];
+
+        if (Array.isArray(g.interacoes) && g.interacoes.length){
+      inters = g.interacoes.map((it, ix) => ({
+        user_id: it.user_id || g.user_id || "",
+        codigo: it.codigo || `${grupoOrig}-${String(ix+1).padStart(2,'0')}`,
+        pergunta: it.pergunta ?? it.question ?? it.content ?? "",
+        resposta: it.resposta ?? it.answer  ?? ""
+      }));
+    }
+     else if (Array.isArray(g.messages) && g.messages.length){
+      const msgs = g.messages;
+      let idxPerg = 1;
+      for(let k=0;k<msgs.length;k++){
+        const mk = msgs[k], mk1 = msgs[k+1];
+                if ((mk?.role||"").toLowerCase()==='user' && mk1 && (mk1?.role||"").toLowerCase()==='assistant' && hasScore(mk1)){
+          inters.push({
+            user_id: g.user_id || "",
+            codigo: `${grupoOrig}-${String(idxPerg).padStart(2,'0')}`,
+            pergunta: mk.content ?? mk.pergunta ?? mk.question ?? "",
+            resposta: mk1.content ?? mk1.resposta ?? mk1.answer ?? ""
+          });
+          idxPerg++;
+        }
+      }
+        } else if (Array.isArray(g.items) && g.items.length){
+      inters = g.items.map((m, ix) => ({
+        user_id: m.user_id || g.user_id || "",
+        codigo: m.codigo || `${grupoOrig}-${String(ix+1).padStart(2,'0')}`,
+        pergunta: m.pergunta ?? m.question ?? m.content ?? "",
+        resposta: m.resposta ?? m.answer  ?? ""
+      }));
+    }
+
+    if (inters.length){
+      agrupamentos.push({ grupo: grupoOrig, group_id, interacoes: inters });
+    }
+  }
+
+  // Renumeração sequencial
+  agrupamentos.forEach((g, i) => {
+    const novoGrupo = `GR${String(i+1).padStart(2,'0')}`;
+    if (g.grupo !== novoGrupo) { g.grupo = novoGrupo; }
+    (g.interacoes||[]).forEach((it, idx) => { it.codigo = `${g.grupo}-${String(idx+1).padStart(2,'0')}`; });
+  });
+
+  // Pré-calcula lotes + renderiza lista
+  cbBuildGroupList();
+  $CB('cbProgress').value = 0;
+  $CB('cbProgressText').textContent = 'Arquivo importado. Lotes prontos.';
+  $CB('cbResults').innerHTML = '<div class="muted">Lotes calculados com limite de 7.800 caracteres.</div>';
+});
+
+/* =================== Construção de Lotes =================== */
+function buildGroupObject(g, interacoesArr){
+  return {
+    grupo: g.grupo,
+    group_id: g.group_id,
+    interacoes: interacoesArr.map(it => ({
+      user_id: it.user_id || g.user_id || '',
+      codigo: it.codigo,
+      pergunta: it.pergunta || '',
+      resposta: it.resposta || ''
+    }))
+  };
+}
+function cutAtWordBoundary(str, maxLen){
+  if(str.length<=maxLen) return str;
+  const sub = str.slice(0, maxLen);
+  const idx = sub.lastIndexOf(' ');
+  return (idx>0 ? sub.slice(0,idx).trim() : sub);
+}
+// Ajusta uma interação que sozinha estoura: corta SOMENTE a RESPOSTA ao limite (fim de palavra)
+function fitSingleInteraction(g, it, limit){
+  let obj = buildGroupObject(g,[it]);
+  if(JSON.stringify(obj).length<=limit) return obj; // MINIFICADO
+  const resp = String(it.resposta||'');
+  let lo=0, hi=resp.length, best='';
+  while(lo<=hi){
+    const mid = Math.floor((lo+hi)/2);
+    const cut = cutAtWordBoundary(resp, mid);
+    const test = buildGroupObject(g, [{...it, resposta:cut}]);
+    const s = JSON.stringify(test); // MINIFICADO
+    if(s.length<=limit){best=cut; lo=mid+1;} else {hi=mid-1;}
+  }
+  return buildGroupObject(g, [{...it, resposta:best}]);
+}
+// Divide em N lotes (≤ limit), sem quebrar interações; se a primeira já estourar, usa fitSingleInteraction
+function buildBatchesForGroup(g, inters, limit=BATCH_LIMIT){
+  const batches = [];
+  let i=0;
+  while(i<inters.length){
+    let j=i, lastGood=i-1;
+    while(j<inters.length){
+      const test = buildGroupObject(g, inters.slice(i, j+1));
+      if(JSON.stringify(test).length<=limit){ lastGood=j; j++; } else break; // MINIFICADO
+    }
+    if(lastGood>=i){
+      batches.push(buildGroupObject(g, inters.slice(i, lastGood+1)));
+      i = lastGood+1;
+    } else {
+      batches.push(fitSingleInteraction(g, inters[i], limit));
+      i = i+1;
+    }
+  }
+  return batches;
+}
+
+/* =================== UI: Lista de Grupos + Cards de Lotes =================== */
+function cbBuildGroupList(){
+  const listEl = $CB('cbGroupList'); listEl.innerHTML = '';
+  const rangeStart = parseInt(($CB('cbRangeStart').value||'').trim(),10);
+  const rangeEnd   = parseInt(($CB('cbRangeEnd').value||'').trim(),10);
+
+  agrupamentos.forEach(g=>{
+    let inters = (g.interacoes || []);
+    const startIdx = isNaN(rangeStart) ? 1 : Math.max(1, rangeStart);
+    const endIdx   = isNaN(rangeEnd)   ? inters.length : Math.min(inters.length, rangeEnd);
+    inters = (startIdx<=endIdx) ? inters.slice(startIdx-1, endIdx) : [];
+
+    const convId = getOrCreateConvIdForGroup(g);
+    const batches = buildBatchesForGroup(g, inters, BATCH_LIMIT);
+    const sizes = batches.map(obj => JSON.stringify(obj, null, 2).length); // UI bonita (pretty)
+    plansCache.set(g.grupo, { convId, batches, sizes });
+
+    const item = document.createElement('label');
+    item.className = 'cb-group-item';
+    item.innerHTML = `
+      <input type="checkbox" name="cbGroupChk" value="${g.grupo}" data-conv="${convId}" />
+      <div style="flex:1;">
+        <div><b>${g.grupo}</b> <small>(${inters.length} interações)</small></div>
+        <small>ID: ${g.group_id}</small> • <small>conversationId: ${convId}</small>
+        <div class="batches">
+          ${batches.map((b,idx)=>`
+            <div class="batch-card" data-grupo="${g.grupo}" data-idx="${idx}">
+              <div class="batch-head">
+                <span>Lote ${idx+1}/${batches.length}</span>
+                <span class="muted">${sizes[idx]} caracteres</span>
+              </div>
+              <div class="batch-body">
+                <pre>${escapeHtml(JSON.stringify(b, null, 2))}</pre>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    listEl.appendChild(item);
+  });
+
+  listEl.querySelectorAll('.batch-card').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      const body = card.querySelector('.batch-body');
+      body.style.display = (body.style.display==='block' ? 'none' : 'block');
+    });
+  });
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]))}
+
+$CB('cbMarkAllGroupsBtn').addEventListener('click', ()=> document.querySelectorAll('input[name="cbGroupChk"]').forEach(el=>el.checked=true));
+$CB('cbUnmarkAllGroupsBtn').addEventListener('click', ()=> document.querySelectorAll('input[name="cbGroupChk"]').forEach(el=>el.checked=false));
+$CB('cbRangeStart').addEventListener('input', cbBuildGroupList);
+$CB('cbRangeEnd').addEventListener('input', cbBuildGroupList);
+
+/* =================== Envio =================== */
+// === resumo compacto a cada N lotes (mantém conversa curta e coerente) ===
+const CB_SUMMARY_EVERY = 5;
+const CB_SUMMARY_MAX_CHARS = 1800;
+
+function buildHistorySummary(messages, maxChars = CB_SUMMARY_MAX_CHARS) {
+  const parts = [];
+  let totalInteracoes = 0;
+  let grupos = new Set();
+
+  for (const m of messages) {
+    if ((m.role || '').toLowerCase() !== 'user') continue;
+    let obj = null;
+    try { obj = JSON.parse(m.content); } catch {}
+    if (!obj || !obj.interacoes) continue;
+
+    grupos.add(obj.grupo ?? obj.group_id ?? 'sem-grupo');
+    totalInteracoes += Array.isArray(obj.interacoes) ? obj.interacoes.length : 0;
+
+    const cods = (obj.interacoes || []).slice(0, 5).map(it => it.codigo).filter(Boolean);
+    if (cods.length) parts.push(`Lote ${obj.grupo}: ${cods.join(', ')}${obj.interacoes.length > 5 ? '…' : ''}`);
+    if (parts.join(' | ').length > maxChars * 0.8) break;
+  }
+
+  const header = `Resumo dos lotes anteriores (aprox. ${totalInteracoes} interações em ${grupos.size} grupo(s)). ` +
+                 `Este resumo substitui o histórico integral para reduzir payload.`;
+  let body = parts.join(' | ');
+  let texto = `${header} ${body}`;
+  if (texto.length > maxChars) texto = texto.slice(0, maxChars - 1) + '…';
+
+  return { role: 'user', content: JSON.stringify({ resumo_historico: true, texto }) };
+}
+
+// Monta messages = histórico + novo LOTE (envio MINIFICADO + sumário periódico)
+function prepareMessages(convId, payloadObj){
+  const prev = getTranscript(convId);
+  const novo = { role:'user', content: JSON.stringify(payloadObj) }; // MINIFICADO
+
+  let out = [...prev, novo];
+
+  const userCount = out.filter(m => (m.role || '').toLowerCase() === 'user').length;
+  if (userCount > 2 && (userCount % CB_SUMMARY_EVERY === 0)) {
+    const tail = out.slice(-2);    // mantém os 2 últimos turnos
+    const head = out.slice(0, -2); // anteriores → viram resumo
+    const resumo = buildHistorySummary(head);
+    out = [resumo, ...tail];
+  }
+  return out;
+}
+
+// ==== Envio para Chatbase — formato MÍNIMO (1 POST, sem stream/backoff/timeout) ====
+async function sendToChatbase({ chatbotId, apiKey, conversationId, messages }, signal) {
+  const url = 'https://www.chatbase.co/api/v1/chat';
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${apiKey}`
+  };
+
+  // Corpo mínimo + conversationId para registro no dashboard
+  const body = { chatbotId, conversationId, messages };
+
+  const resp = await fetch(url, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body),
+    signal
+  });
+
+  // Não ler o corpo: confirmamos apenas status/ok
+  return { ok: resp.ok, status: resp.status };
+}
+/* ===== Botões Config ===== */
+$CB('cbSaveBtn').addEventListener('click', ()=>{
+  cbSetSetting(CB_STORAGE_KEYS.CHATBOT_ID, $CB('cbChatbotId').value.trim());
+  cbSetSetting(CB_STORAGE_KEYS.API_KEY,    $CB('cbApiKey').value.trim());
+  alert('Configurações salvas neste navegador.');
+});
+$CB('cbClearBtn').addEventListener('click', ()=>{
+  cbClearSettings();
+  $CB('cbChatbotId').value = $CB('cbApiKey').value = '';
+  const sel = $CB('cbChatbotPreset'); if (sel) sel.value = "";
+});
+
+/* Auto-preenche Chatbot ID e API Key ao escolher um preset (sem afetar o fluxo) */
+(function(){
+  const sel = $CB('cbChatbotPreset');
+  if(!sel) return;
+  sel.addEventListener('change', function(){
+    const p = CHATBOT_PRESETS[this.value] || { id:"", key:"" };
+    $CB('cbChatbotId').value = p.id || "";
+    $CB('cbApiKey').value    = p.key || "";
+  });
+})();
+$CB('cbCancelBtn').addEventListener('click', ()=>{
+  cbCancel = true;
+  if (cbAbortCtrl) { try { cbAbortCtrl.abort(); } catch(_){} }
+  $CB('cbCancelBtn').disabled = true;
+});
+
+/* ===== Fechar modal (app segue aberto por baixo) ===== */
+$CB('chatbaseCloseBtn').addEventListener('click', ()=>{ document.getElementById('chatbaseModal').style.display='none'; });
+
+/* ===== Enviar grupos selecionados (com streaming/backoff e 504→subdividir) ===== */
+$CB('cbSendSelectedGroupsBtn').addEventListener('click', async ()=>{
+  cbCancel = false;
+  cbAbortCtrl = new AbortController();
+  $CB('cbCancelBtn').disabled = false;
+  const chatbotId = $CB('cbChatbotId').value.trim() || cbGetSetting(CB_STORAGE_KEYS.CHATBOT_ID);
+  const apiKey    = $CB('cbApiKey').value.trim()    || cbGetSetting(CB_STORAGE_KEYS.API_KEY);
+  const resultsEl = $CB('cbResults'), bar = $CB('cbProgress'), barTxt = $CB('cbProgressText');
+
+  resultsEl.innerHTML = '';
+  if(!chatbotId){ resultsEl.textContent = 'Preencha o Chatbot ID.'; return; }
+  if(!apiKey){ resultsEl.textContent = 'Preencha a API Key.'; return; }
+
+  const sel = Array.from(document.querySelectorAll('input[name="cbGroupChk"]:checked'));
+  if(!sel.length){ resultsEl.textContent = 'Selecione pelo menos um grupo.'; return; }
+
+  // Plano com lotes já pré-calculados
+  const plans = sel.map(chk=>{
+    const g = agrupamentos.find(x=>x.grupo===chk.value);
+    if(!g) return null;
+    const plan = plansCache.get(g.grupo);
+    return { g, convId: plan?.convId || getOrCreateConvIdForGroup(g), batches: plan?.batches || [], sizes: plan?.sizes || [] };
+  }).filter(Boolean);
+
+  const totalBatches = Math.max(1, plans.reduce((acc,p)=>acc + p.batches.length, 0));
+  let sent = 0;
+
+  const btn = $CB('cbSendSelectedGroupsBtn');
+  const prevLabel = btn.textContent; btn.disabled = true; btn.textContent = 'Enviando…';
+
+  resultsEl.innerHTML += `<div class="muted">— Envio iniciado • ${new Date().toLocaleTimeString()} —</div>`;
+
+  for(const plan of plans){
+    const { g, convId, batches } = plan;
+    const grp = g.grupo;
+    if(!batches.length){
+      resultsEl.innerHTML += `<div class="err">⚠️ <b>${grp}</b> (${convId}) → nenhuma interação no intervalo selecionado.</div>`;
+      continue;
+    }
+    for(let i=0;i<batches.length;i++){
+      const payload = batches[i];
+      const messages = prepareMessages(convId, payload);
+      const lineId = `cb-st-${grp}-${i+1}`;
+      let line = document.getElementById(lineId);
+      if(!line){ line = document.createElement('div'); line.id=lineId; resultsEl.appendChild(line); }
+      const sizePretty = JSON.stringify(payload, null, 2).length;
+      line.textContent = `${grp} • lote ${i+1}/${batches.length} (${sizePretty} chars)  -  Enviando…`;
+
+            try{
+        // Até 3 tentativas por lote, sem bloquear a fila
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          try {
+            barTxt.textContent = `Enviando: ${sent+1}/${totalBatches} • ${grp} (lote ${i+1}/${batches.length})${attempt>1 ? ` • tentativa ${attempt}/3` : ''}`;
+            const result = await sendToChatbase({ chatbotId, apiKey, conversationId: convId, messages }, cbAbortCtrl.signal);
+
+            if (result.ok) {
+              // Sucesso confirmado pelo servidor (sem depender do corpo de resposta)
+              line.innerHTML = `${grp} • lote ${i+1}/${batches.length} (${sizePretty} chars)  -  <span class="ok">Enviado para o Agente de Curadoria</span> • <span class="ok">Resposta gerada pelo Agente de Curadoria</span>`;
+              // Persistimos o histórico local desta conversa
+              setTranscript(convId, messages);
+              break; // sucesso: sai do loop de tentativas
+            } else {
+              // Mantém sua regra: 504 → dividir o lote atual e reprocessar
+              if (result.status === 504) {
+                const itens = Array.isArray(payload?.interacoes) ? payload.interacoes : [];
+                if (itens.length > 1) {
+                  const mid = Math.ceil(itens.length / 2);
+                  const sub1 = buildGroupObject(g, itens.slice(0, mid));
+                  const sub2 = buildGroupObject(g, itens.slice(mid));
+                  // substitui o lote atual por 2 sublotes
+                  batches.splice(i, 1, sub1, sub2);
+                  i--; // volta um índice para enviar o sub1 na próxima iteração
+                  line.innerHTML = `${grp} • lote ${i+1}/${batches.length} (${sizePretty} chars)  -  <span class="err">Timeout 504 → lote dividido em 2</span>`;
+                  break; // sai do loop de tentativas e segue com os novos sublotes
+                }
+              }
+
+              // Outras falhas: tenta novamente até 3x, sem travar a fila
+              if (attempt === 3) {
+                line.innerHTML = `${grp} • lote ${i+1}/${batches.length} (${sizePretty} chars)  -  <span class="err">Falha (HTTP ${result.status}) após 3 tentativas</span>`;
+              } else {
+                line.innerHTML = `${grp} • lote ${i+1}/${batches.length} (${sizePretty} chars)  -  Tentando novamente (${attempt+1}/3)…`;
+                await cbSleep(RETRY_DELAYS_MS[Math.min(attempt-1, RETRY_DELAYS_MS.length-1)] + Math.floor(Math.random()*500));
+                continue; // próxima tentativa
+              }
+            }
+            // Sai do loop de tentativas se chegou aqui sem "continue"
+            break;
+          } catch (e) {
+            if (attempt === 3) {
+              line.innerHTML = `${grp} • lote ${i+1}/${batches.length} (${sizePretty} chars)  -  <span class="err">Erro de rede após 3 tentativas</span>`;
+            } else {
+              line.innerHTML = `${grp} • lote ${i+1}/${batches.length} (${sizePretty} chars)  -  Tentando novamente (${attempt+1}/3)…`;
+              await cbSleep(RETRY_DELAYS_MS[Math.min(attempt-1, RETRY_DELAYS_MS.length-1)]);
+            }
+          }
+        }
+
+        // Pequeno atraso entre um envio e outro (independente de sucesso/falha)
+        await cbSleep(INTER_SEND_DELAY_MS + Math.floor(Math.random()*600));
+      } catch(e) {
+        // Fallback defensivo — não bloqueia a fila
+        line.innerHTML = `${grp} • lote ${i+1}/${batches.length} (${sizePretty} chars)  -  <span class="err">Erro inesperado</span>`;
+      }
+
+            sent++; bar.value = Math.round((sent*100)/totalBatches);
+
+      // Cancelamento: interrompe o loop de lotes (inner loop)
+      if (cbCancel) {
+        resultsEl.innerHTML += `<div class="muted">— Cancelado pelo usuário • ${new Date().toLocaleTimeString()} —</div>`;
+        break;
+      }
+    }
+
+    // Cancelamento: ao sair do inner loop, interrompe também o loop de grupos (outer loop)
+    if (cbCancel) break;
+  }
+
+    resultsEl.innerHTML += `<div class="muted">— ${cbCancel ? 'Cancelado' : 'Concluído'} • ${new Date().toLocaleTimeString()} —</div>`;
+  barTxt.textContent = cbCancel ? 'Cancelado' : 'Concluído';
+  btn.disabled = false; btn.textContent = prevLabel;
+  $CB('cbCancelBtn').disabled = true;
+  cbAbortCtrl = null;
+});
+</script>
+<script>
+/* ===== Side Nav – links e ajuda integrada (espera DOM pronto) ===== */
+window.addEventListener('DOMContentLoaded', function(){
+  const LINKS = Object.assign({
+    workspace:    'LINK_DO_WORKSPACE',
+    conversor:    'LINK_DO_CONVERSOR',
+    transmissor:  'LINK_DO_TRANSMISSOR',
+    ajuda:        '#',
+    current:      'transmissor'
+  }, window.APP_LINKS || {});
+
+  // Links + ativo
+  document.querySelectorAll('.side-nav .sn-btn').forEach(a=>{
+    const app = a.getAttribute('data-app');
+    const href = LINKS[app] || '#';
+    a.setAttribute('href', href);
+    if (LINKS.current === app) a.classList.add('active');
+  });
+
+  // Ajuda: usa a mesma bubble existente, reposicionada ao lado da barra
+  const bubble  = document.querySelector('.help-bubble');
+  const fab     = document.querySelector('.help-fab');
+  const shell   = document.querySelector('.cb-dialog');
+  const nav     = document.querySelector('.side-nav');
+  const helpBtn = document.querySelector('.side-nav .sn-btn[data-app="ajuda"]');
+
+  if (bubble && shell && nav && helpBtn){
+    if (fab) fab.style.display = 'none';
+    shell.appendChild(bubble);
+    bubble.style.position = 'absolute';
+    bubble.style.right    = 'auto';
+    bubble.style.display  = 'none';
+    bubble.style.zIndex   = '1300';
+
+    const place = () => {
+      const left = nav.offsetLeft + nav.offsetWidth + 12; // após a linha fina
+      bubble.style.left = left + 'px';
+      bubble.style.bottom = '24px';
+      bubble.style.maxWidth = 'min(560px, calc(100% - ' + (left + 36) + 'px))';
+    };
+    place();
+    window.addEventListener('resize', place);
+
+    let open = false;
+    helpBtn.addEventListener('click', (e)=>{
+      e.preventDefault();
+      open = !open;
+      bubble.style.display = open ? 'block' : 'none';
+    });
+  }
+});
+</script>
+<!-- Ajuda flutuante (canto inferior direito) -->
+<div class="help-fab">
+  <span class="help-hint" tabindex="0" aria-label="Ajuda: passo a passo" role="button">?
+    <div class="help-bubble" role="dialog" aria-modal="false">
+      <div class="hb-title">🧠 Passo a passo da Curadoria</div>
+
+      <div class="hb-section">
+        <div class="hb-sub">1. Conversor — Preparar os Arquivos</div>
+        <p>Use este programa para converter documentos da base da Kiara (como DOCX, PDF, RTF, etc.) para o formato .TXT.<br>
+        Isso permite padronizar os conteúdos e facilitar o envio para o Agente de Curadoria.</p>
+        <p><strong>💡 Recomendações:</strong></p>
+        <ul>
+          <li>Converta apenas os documentos realmente úteis para o treinamento ou avaliação.</li>
+          <li>Tente agrupar informações em menos arquivos, evitando centenas de arquivos pequenos.</li>
+          <li>Após a conversão, os arquivos .TXT estarão prontos para subir na Base de Dados do Agente de Curadoria.</li>
+        </ul>
+      </div>
+
+      <div class="hb-section">
+        <div class="hb-sub">2. Transmissor — Enviar as Interações para Avaliação</div>
+        <p>Neste programa você irá transmitir as interações (perguntas e respostas da Kiara) que serão avaliadas.</p>
+        <p><strong>O que você precisa informar:</strong></p>
+        <ul>
+          <li>ID do Bot de Curadoria (obrigatório)</li>
+          <li>Chave de API (<strong>⚠️ NUNCA</strong> compartilhe essa chave com terceiros ou exponha em lugares públicos)</li>
+        </ul>
+        <p><strong>Como funciona:</strong></p>
+        <p>Após preencher os dados e importar o JSON com as interações do dia, clique em <em>ENVIAR</em>.<br>
+        O Agente de Curadoria receberá os dados e dará início automático à avaliação de cada resposta da Kiara.</p>
+        <p><strong>📅 Dica:</strong> idealmente, transmita as interações do mesmo dia em que será feita a curadoria.</p>
+      </div>
+
+      <div class="hb-section">
+        <div class="hb-sub">3. Workspace — Visualizar as Avaliações</div>
+        <p>Depois que o Agente de Curadoria processar os dados, ele irá gerar um arquivo .JSON com as classificações de cada resposta da Kiara.</p>
+        <p><strong>O que você pode fazer no Workspace:</strong></p>
+        <ul>
+          <li>Importar os arquivos de retorno (.JSON).</li>
+          <li>Visualizar todas as avaliações feitas.</li>
+          <li>Filtrar por classificação: ✅ Correta · ❌ Incorreta · ⚠️ Falta de Documentação.</li>
+        </ul>
+        <p>🔎 Com os filtros, você consegue revisar rapidamente onde a IA foi bem e onde precisa de ajustes na base.</p>
+      </div>
+
+      <div class="hb-flow">✅ Fluxo ideal — ➡️ Conversor → Transmissor → Workspace</div>
+    </div>
+  </span>
+</div>
+<script>
+  (function(){
+    const hint = document.querySelector('.help-hint');
+    if(!hint) return;
+    document.addEventListener('click', (e)=>{
+      if(!hint.contains(e.target)){
+        hint.blur?.();   // tira o foco -> some o pop-up
+      }
+    });
+  })();
+</script>
+</body>
+</html>
